@@ -10,6 +10,7 @@ class GameEngine:
         self.current_card = self.deck.draw()
         self.next_card = None
         self.score = 0
+        self.streak = 0
         self.status_msg = "Will the next card be HIGHER or LOWER?"
         self.status_color = (220, 220, 220)
 
@@ -20,6 +21,14 @@ class GameEngine:
         self.font_title = pygame.font.SysFont(None, 40)
         self.font_medium = pygame.font.SysFont(None, 30)
         self.font_small = pygame.font.SysFont(None, 24)
+
+        def get_multiplier(self):
+            """2x at a 3-win streak, 3x at a 5-win streak."""
+            if self.streak >= 5:
+                return 3
+            if self.streak >= 3:
+                return 2
+            return 1    
 
     def evaluate_guess(self, guess):
         """Draws next card and evaluates prediction."""
@@ -34,10 +43,13 @@ class GameEngine:
             correct = self.next_card.numeric_rank < self.current_card.numeric_rank
         
         if correct:
-            self.score += 1
-            self.status_msg = f"CORRECT! {self.next_card.rank_str} vs {self.current_card.rank_str}"
+            self.streak += 1
+            points = self.get_multiplier()
+            self.score += points
+            self.status_msg = f"CORRECT! {self.next_card.rank_str} vs {self.current_card.rank_str}  (+{points})"
             self.status_color = (80, 220, 80)
         else:
+            self.streak = 0
             self.score = max(0, self.score - 1)
             self.status_msg = f"WRONG! {self.next_card.rank_str} vs {self.current_card.rank_str}"
             self.status_color = (235, 75, 75)
@@ -62,6 +74,11 @@ class GameEngine:
 
         score_surf = self.font_medium.render(f"Score: {self.score}", True, (255, 220, 80))
         screen.blit(score_surf, (30, 30))
+
+        streak_surf = self.font_small.render(
+            f"Streak: {self.streak} (x{self.get_multiplier()})", True, (255, 200, 120)
+        )
+        screen.blit(streak_surf, (30, 62))
 
         rem_surf = self.font_small.render(f"Deck: {self.deck.remaining} left", True, (210, 210, 210))
         screen.blit(rem_surf, (self.width - rem_surf.get_width() - 30, 35))
