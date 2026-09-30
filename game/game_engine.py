@@ -34,6 +34,14 @@ class GameEngine:
                 return 2
             return 1    
 
+    def get_multiplier(self):
+        """2x at a 3-win streak, 3x at a 5-win streak."""
+        if self.streak >= 5:
+            return 3
+        if self.streak >= 3:
+            return 2
+        return 1
+
     def evaluate_guess(self, guess):
         """Draws next card and evaluates prediction."""
         self.next_card = self.deck.draw()
