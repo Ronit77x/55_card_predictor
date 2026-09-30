@@ -34,6 +34,13 @@ class GameEngine:
         """Draws next card and evaluates prediction."""
         self.next_card = self.deck.draw()
 
+        # Tie / push: same rank -> keep score and streak, show yellow message
+        if self.next_card.numeric_rank == self.current_card.numeric_rank:
+            self.status_msg = "PUSH / TIE! Rank matched."
+            self.status_color = (255, 220, 0)
+            self.current_card = self.next_card
+            return
+
         #BUG SYMPTON:
         #Face and high cards are incorrectly judged lower than small cards.
         
